@@ -1,8 +1,10 @@
-const mongoose = 'mongoose',
-      URI = 'mongodb+srv://Seba1705:Seba1705@primerbase-qdsue.mongodb.net/merntask';
+const mongoose = require('mongoose'),
+    { Schema } = mongoose;
 
-mongoose.conect(URI)
-    .then(db => console.log('DB is conected'))
-    .catch(err => console.error(err));
+const TaskSchema =  new Schema({
+    title : { type : String, required : true },
+    description : { type : String, required : true }
+});
 
-module.exports(mongoose);
+module.exports = mongoose.model('Task', TaskSchema);
+
