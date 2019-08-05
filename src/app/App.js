@@ -7,6 +7,7 @@ export default class App extends Component {
         this.state = {
             title : '',
             description : '',
+            _id : '',
             tasks : []
         }
         this.addTask = this.addTask.bind(this);
@@ -20,21 +21,43 @@ export default class App extends Component {
     }
 
     addTask(e){
-        fetch('/api/task', {
-            method: 'POST',
-            body: JSON.stringify(this.state),
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-        })
-            .then(res => res.json())
-            .then(data => {
-                M.toast({ html : 'Task saved'})
-                this.setState({title : '', description : ''})
-                this.fetchTask();
+        if(this.state._id){
+            fetch(`/api/task/${this.state._id}`,{
+                method: 'PUT',
+                body: JSON.stringify(this.state),
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                }
             })
-            .catch(err => console.error(err))
+                .then(res => res.json())
+                .then(data => {
+                    M.toast({html : 'Task Updated'});
+                    this.setState({
+                        title : '',
+                        description : '',
+                        _id : ''
+                    });
+                    this.fetchTask();
+                });
+            
+        }else{
+            fetch('/api/task', {
+                method: 'POST',
+                body: JSON.stringify(this.state),
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    M.toast({ html : 'Task saved'})
+                    this.setState({title : '', description : ''})
+                    this.fetchTask();
+                })
+                .catch(err => console.error(err))
+        }
     
         e.preventDefault();
     }
@@ -55,11 +78,33 @@ export default class App extends Component {
     }
 
     editTask(id){
-        console.log(id)
+        fetch(`/api/task/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                this.setState({
+                    title : data.title,
+                    description : data.description,
+                    _id : data._id
+                })
+            })
     }
 
     deleteTask(id){
-
+        if(confirm('Are you sure you want to delete it?')){
+            fetch(`/api/task/${id}`, {
+                method: 'DELETE',
+                body: JSON.stringify(this.state),
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    M.toast({html : 'Task Deleted'});
+                    this.fetchTask();
+                })
+        }
     }
 
     render() {
@@ -71,9 +116,9 @@ export default class App extends Component {
                     </div>
                 </nav>
 
-                <div className='container'>
+                <div className='container-fluid'>
                     <div className='row'>
-                        <div className='col s5'>
+                        <div className='col s12 m4'>
                             <div className='card' >
                                 <div className='card-content'>
                                     <form onSubmit={this.addTask}>
@@ -105,11 +150,14 @@ export default class App extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className='col s7'>
+                        <div className='col s12 m8'>
                             <table>
                                 <thead>
-                                    <tr><th>Title</th></tr>
-                                    <tr><th>Description</th></tr>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Options</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                     {
@@ -122,7 +170,7 @@ export default class App extends Component {
                                                         <button onClick={() => this.editTask(task._id)} className='btn light-blue darken-4'>
                                                             <i className='material-icons'>edit</i>
                                                         </button>
-                                                        <button onClick={this.deleteTask} className='btn light-blue darken-4' style={{margin : '4px'}}>
+                                                        <button onClick={() => this.deleteTask(task._id)} className='btn light-blue darken-4' style={{margin : '4px'}}>
                                                             <i className='material-icons'>delete</i>
                                                         </button>
                                                     </td>
