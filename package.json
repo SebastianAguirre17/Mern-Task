@@ -27,7 +27,7 @@
         "start": "node ./src/index",
         "dev": "nodemon ./src/index",
         "webpack": "webpack --mode development --watch",
-        "build" : ""
+        "build": "next build"
     },
     "author": "",
     "license": "ISC"
