@@ -26,8 +26,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node ./src/index",
         "dev": "nodemon ./src/index",
-        "webpack": "webpack --mode development --watch",
-        "build": "next build"
+        "webpack": "webpack --mode development --watch"
     },
     "author": "",
     "license": "ISC"
